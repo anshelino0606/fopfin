@@ -27,8 +27,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="7.0.15" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.35.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.35.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.6.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.6.1" />
     
     <!-- PDF Generation -->
     <!-- <PackageReference Include="Select.Pdf" Version="23.2.0" /> -->

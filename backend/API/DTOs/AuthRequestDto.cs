@@ -1,14 +1,22 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace fopfin.API.DTOs
 {
     public class OAuthRequest
     {
-        public string Provider { get; set; }
-        public string Token { get; set; }
+        [Required]
+        public string Provider { get; set; } = string.Empty; // ✅ Prevents null
+
+        [Required]
+        public string Token { get; set; } = string.Empty; // ✅ Prevents null
     }
 
     public class LoginRequest
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        [Required]
+        public string Email { get; set; } = string.Empty; // ✅ Prevents null
+
+        [Required]
+        public string Password { get; set; } = string.Empty; // ✅ Prevents null
     }
 }

@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace fopfin.API.DTOs
 {
     public class RefreshTokenRequest
     {
-        public string RefreshToken { get; set; }
+        [Required]
+        public string RefreshToken { get; set; } = string.Empty; // ✅ Prevents null
     }
 }

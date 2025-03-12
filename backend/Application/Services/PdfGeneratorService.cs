@@ -10,26 +10,29 @@ namespace fopfin.Application.Services
     {
         public async Task<byte[]> GeneratePdf(TaxReportDto taxReport)
         {
-            string htmlContent = $"<h1>Tax Report for {taxReport.Period}</h1>" +
-                                $"<p><strong>Total Income:</strong> {taxReport.TotalIncome}</p>" +
-                                $"<p><strong>Total Tax:</strong> {taxReport.TotalTax}</p>";
-
-            // Add transactions
-            htmlContent += "<h2>Transactions</h2><ul>";
-            foreach (var transaction in taxReport.Transactions)
+            return await Task.Run(() =>
             {
-                htmlContent += $"<li>{transaction.Date}: {transaction.Amount} ({transaction.Type})</li>";
-            }
-            htmlContent += "</ul>";
+                string htmlContent = $"<h1>Tax Report for {taxReport.Period}</h1>" +
+                                    $"<p><strong>Total Income:</strong> {taxReport.TotalIncome}</p>" +
+                                    $"<p><strong>Total Tax:</strong> {taxReport.TotalTax}</p>";
 
-            HtmlToPdf converter = new HtmlToPdf();
-            PdfDocument doc = converter.ConvertHtmlString(htmlContent);
+                // Add transactions
+                htmlContent += "<h2>Transactions</h2><ul>";
+                foreach (var transaction in taxReport.Transactions)
+                {
+                    htmlContent += $"<li>{transaction.Date}: {transaction.Amount} ({transaction.Type})</li>";
+                }
+                htmlContent += "</ul>";
 
-            using (MemoryStream ms = new MemoryStream())
-            {
-                doc.Save(ms);
-                return ms.ToArray();
-            }
+                HtmlToPdf converter = new HtmlToPdf();
+                PdfDocument doc = converter.ConvertHtmlString(htmlContent);
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    doc.Save(ms);
+                    return ms.ToArray();
+                }
+            });
         }
 
     }

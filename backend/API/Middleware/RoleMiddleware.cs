@@ -13,8 +13,9 @@ public class RoleMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        var userRole = context.User.FindFirst(ClaimTypes.Role)?.Value;
-        var path = context.Request.Path.Value;
+        // ✅ Use a safe null check: Default to an empty string if no role is found
+        var userRole = context.User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
+        var path = context.Request.Path.Value ?? string.Empty; // ✅ Ensure path is not null
 
         // Enforce restrictions
         if ((path.StartsWith("/api/admin") && userRole != "Admin") ||

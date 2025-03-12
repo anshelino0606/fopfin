@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using System.Text;
+using fopfin.API.Configurations; // Ensure correct namespace for DependencyInjection
 
 namespace fopfin.API
 {
@@ -17,12 +18,13 @@ namespace fopfin.API
 
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApplicationServices();
+            // Ensure extension methods exist in DependencyInjection.cs
+            services.AddApplicationServices(); 
             services.AddInfrastructureServices(Configuration);
 
             services.AddControllers();
@@ -34,7 +36,12 @@ namespace fopfin.API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fopfin API", Version = "v1" });
             });
 
-            // OAuth Authentication (Google)
+            // Read JWT settings safely
+            var jwtSecret = Configuration["Jwt:Secret"] ?? throw new ArgumentNullException("Jwt:Secret is missing");
+            var jwtIssuer = Configuration["Jwt:Issuer"] ?? throw new ArgumentNullException("Jwt:Issuer is missing");
+            var jwtAudience = Configuration["Jwt:Audience"] ?? throw new ArgumentNullException("Jwt:Audience is missing");
+
+            // OAuth & JWT Authentication
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -42,12 +49,12 @@ namespace fopfin.API
             })
             .AddGoogle(options =>
             {
-                options.ClientId = Configuration["GoogleOAuth:ClientId"];
-                options.ClientSecret = Configuration["GoogleOAuth:ClientSecret"];
+                options.ClientId = Configuration["GoogleOAuth:ClientId"] ?? throw new ArgumentNullException("GoogleOAuth:ClientId is missing");
+                options.ClientSecret = Configuration["GoogleOAuth:ClientSecret"] ?? throw new ArgumentNullException("GoogleOAuth:ClientSecret is missing");
             })
             .AddJwtBearer(options =>
             {
-                var key = Encoding.UTF8.GetBytes(Configuration["Jwt:Secret"]);
+                var key = Encoding.UTF8.GetBytes(jwtSecret);
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -55,9 +62,9 @@ namespace fopfin.API
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = true,
-                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    ValidIssuer = jwtIssuer,
                     ValidateAudience = true,
-                    ValidAudience = Configuration["Jwt:Audience"],
+                    ValidAudience = jwtAudience,
                     ValidateLifetime = true
                 };
             });

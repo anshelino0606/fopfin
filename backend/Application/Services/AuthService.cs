@@ -1,5 +1,6 @@
 using fopfin.Application.Interfaces;
 using fopfin.Domain.Entities;
+using fopfin.Domain.ValueObjects;
 
 namespace fopfin.Application.Services {
     public class AuthService : IAuthService
@@ -29,7 +30,7 @@ namespace fopfin.Application.Services {
         public async Task<string> LoginWithEmail(string email, string password)
         {
             var user = await _userRepository.FindByEmail(new Email(email));
-            if (user == null || !_passwordHasher.Verify(password, user.PasswordHash))
+            if (user == null || string.IsNullOrEmpty(user.PasswordHash) || !_passwordHasher.Verify(password, user.PasswordHash))
                 throw new UnauthorizedAccessException("Invalid credentials");
 
             return _jwtService.GenerateToken(user);
@@ -39,7 +40,8 @@ namespace fopfin.Application.Services {
         {
             string accessToken = _jwtService.GenerateToken(user);
             string refreshToken = Guid.NewGuid().ToString(); // Store in DB later
-            return (accessToken, refreshToken);
+
+            return await Task.FromResult((accessToken, refreshToken)); // ✅ Wrap it in Task
         }
 
         public async Task<string> RefreshToken(string refreshToken)

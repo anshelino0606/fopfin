@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using fopfin.Application.Interfaces;
 using fopfin.API.DTOs;
 using fopfin.Infrastructure.Persistence;
+using fopfin.Domain.Enums;
 
 public class TaxReportService : ITaxReportService
 {
