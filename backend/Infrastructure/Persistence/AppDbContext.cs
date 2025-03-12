@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using fopfin.Domain.Entities;
+using fopfin.API.Configurations;
 
 namespace fopfin.Infrastructure.Persistence
 {
@@ -12,11 +13,8 @@ namespace fopfin.Infrastructure.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Email)
-                .IsUnique();
         }
     }
 }

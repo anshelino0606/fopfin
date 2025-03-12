@@ -5,10 +5,12 @@ namespace fopfin.Domain.ValueObjects
 {
     public class Email
     {
-        public string Value { get; }
+        public string Value { get; private set; } = string.Empty;// ✅ Keep a private setter
 
         private static readonly Regex EmailRegex = new Regex(
             @"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        private Email() { } // ✅ Required for EF Core
 
         public Email(string email)
         {
