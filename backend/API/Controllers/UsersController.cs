@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using fopfin.Domain.Entities;
+using fopfin.Domain.Enums;
 using fopfin.Infrastructure.Persistence;
 
 namespace backend.API.Controllers
@@ -33,7 +34,7 @@ namespace backend.API.Controllers
         }
 
         // GET: api/Users/5
-        [HttpGet("{id}")]
+        [HttpGet("id/{id}")]
         public async Task<ActionResult<User>> GetUser(Guid id)
         {
           if (_context.Users == null)
@@ -50,9 +51,28 @@ namespace backend.API.Controllers
             return user;
         }
 
+        // GET: api/Users/group/0
+        [HttpGet("group/{group}")]
+        public async Task<ActionResult<IEnumerable<User>>> GetUserByGroup(TaxGroup group) {
+            if (_context.Users == null) return NotFound();
+            var users = _context.Users.AsQueryable().Where(x => x.TaxGroup == group);
+            if (users == null) return NotFound();
+            return await users.ToListAsync();
+        }
+
+        // GET: api/Users/group/0
+        [HttpGet("role/{role}")]
+        public async Task<ActionResult<IEnumerable<User>>> GetUserByRole(Role role) {
+            if (_context.Users == null) return NotFound();
+            var users = _context.Users.AsQueryable().Where(x => x.Role == role);
+            if (users == null) return NotFound();
+            return await users.ToListAsync();
+        }
+
+
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("id/{id}")]
         public async Task<IActionResult> PutUser(Guid id, User user)
         {
             if (id != user.Id)
@@ -97,7 +117,7 @@ namespace backend.API.Controllers
         }
 
         // DELETE: api/Users/5
-        [HttpDelete("{id}")]
+        [HttpDelete("id/{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             if (_context.Users == null)

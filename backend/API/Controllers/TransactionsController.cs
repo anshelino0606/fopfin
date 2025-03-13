@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using fopfin.Domain.Entities;
+using fopfin.Domain.Enums;
 using fopfin.Infrastructure.Persistence;
 
 namespace backend.API.Controllers
@@ -21,7 +22,7 @@ namespace backend.API.Controllers
             _context = context;
         }
 
-        // GET: api/UsTransactions
+        // GET: api/Transactions
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Transaction>>> GetTransaction()
         {
@@ -32,8 +33,8 @@ namespace backend.API.Controllers
             return await _context.Transactions.ToListAsync();
         }
 
-        // GET: api/UsTransactions/5
-        [HttpGet("{id}")]
+        // GET: api/Transactions/id/5
+        [HttpGet("id/{id}")]
         public async Task<ActionResult<Transaction>> GetTransaction(int id)
         {
           if (_context.Transactions == null)
@@ -50,9 +51,39 @@ namespace backend.API.Controllers
             return transaction;
         }
 
-        // PUT: api/UsTransactions/5
+        // GET: api/Transactions/userId/1
+        [HttpGet("userId/{userId}")]
+        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionByUser(int userId)
+        {
+            if (_context.Transactions == null) return NotFound();
+            var transactions = _context.Transactions.AsQueryable().Where(x => x.UserId == userId);
+            if (transactions == null) return NotFound();
+            return await transactions.ToListAsync();
+        }
+
+        // GET: api/Transactions/userId/1/transaction_type/0
+        [HttpGet("userId/{userId}/transaction_type/{type}")]
+        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionByUserAndType(int userId, TransactionType type)
+        {
+            if (_context.Transactions == null) return NotFound();
+            var transactions = _context.Transactions.AsQueryable().Where(x => x.UserId == userId && x.Type == type);
+            if (transactions == null) return NotFound();
+            return await transactions.ToListAsync();
+        }
+
+        // GET: api/Transactions/userId/1/created_at/2025-03-13T15:14:01.427Z
+        [HttpGet("userId/{userId}/created_at/{dt}")]
+        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionByCreatedAt(int userId, DateTime dt)
+        {
+            if (_context.Transactions == null) return NotFound();
+            var transactions = _context.Transactions.AsQueryable().Where(x => x.UserId == userId && x.CreatedAt == dt);
+            if (transactions == null) return NotFound();
+            return await transactions.ToListAsync();
+        }
+
+        // PUT: api/Transactions/id/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("id/{id}")]
         public async Task<IActionResult> PutTransaction(int id, Transaction transaction)
         {
             if (id != transaction.Id)
@@ -81,7 +112,7 @@ namespace backend.API.Controllers
             return NoContent();
         }
 
-        // POST: api/UsTransactions
+        // POST: api/Transactions
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Transaction>> PostTransaction(Transaction transaction)
@@ -96,8 +127,8 @@ namespace backend.API.Controllers
             return CreatedAtAction("GetTransaction", new { id = transaction.Id }, transaction);
         }
 
-        // DELETE: api/UsTransactions/5
-        [HttpDelete("{id}")]
+        // DELETE: api/Transactions/id/5
+        [HttpDelete("id/{id}")]
         public async Task<IActionResult> DeleteTransaction(int id)
         {
             if (_context.Transactions == null)
