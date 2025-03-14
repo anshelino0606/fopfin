@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using System.Text;
 using fopfin.API.Configurations; // Ensure correct namespace for DependencyInjection
+using Microsoft.EntityFrameworkCore;
+using fopfin.Infrastructure.Persistence;
 
 namespace fopfin.API
 {
@@ -70,6 +72,9 @@ namespace fopfin.API
             });
 
             services.AddAuthorization();
+
+            services.AddDbContext<AppDbContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("AppDbContext")));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
