@@ -1,35 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
+import GlobalStyles from './styles/GlobalStyles';
+import AuthPage from './pages/AuthPage';
+import ExpensesPage from './pages/ExpensesPage';
+import IncomePage from './pages/IncomePage';
+import StatisticsPage from './pages/StatisticsPage';
+import SettingsPage from './pages/SettingsPage';
+import UsersModal from './components/modals/UsersModal';
+import CategoriesModal from './components/modals/CategoriesModal';
+import DeleteDataModal from './components/modals/DeleteDataModal';
+import LogoutModal from './components/modals/LogoutModal';
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App: React.FC = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <ThemeProvider>
+      <GlobalStyles />
+      <Router>
+        <Routes>
+          <Route path="/" element={<AuthPage />} />
+          <Route path="/expenses" element={<ExpensesPage />} />
+          <Route path="/income" element={<IncomePage />} />
+          <Route path="/statistics" element={<StatisticsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/settings/users" element={<UsersModal />} />
+          <Route path="/settings/categories" element={<CategoriesModal />} />
+          <Route path="/settings/delete-data" element={<DeleteDataModal />} />
+          <Route path="/settings/logout" element={<LogoutModal />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
+  );
+};
 
-export default App
+export default App; 
