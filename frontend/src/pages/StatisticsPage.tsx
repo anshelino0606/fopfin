@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import {Outlet, useNavigate} from 'react-router-dom';
+
 import { useTheme } from '../context/ThemeContext';
 
 const PageWrapper = styled.div`
@@ -72,13 +73,6 @@ const StatisticsTitle = styled.div`
   color: ${props => props.theme.mode === 'dark' ? 'var(--text-dark)' : 'var(--text-light)'};
 `;
 
-const MainContent = styled.div`
-  flex: 1;
-  background: ${props => props.theme.mode === 'dark' ? 'var(--background-dark)' : 'var(--background-light)'};
-  padding: 16px;
-  min-height: calc(100vh - 160px - 100px);
-`;
-
 const BottomNavigation = styled.div`
   display: flex;
   justify-content: center;
@@ -112,7 +106,7 @@ const NavIcon = styled.button<{ active?: boolean }>`
   }
 `;
 
-const StatisticsPage: React.FC = () => {
+export const StatisticsPage: React.FC = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
 
@@ -134,9 +128,7 @@ const StatisticsPage: React.FC = () => {
           </HeaderTitle>
         </Header>
 
-        <MainContent>
-          {/* Тут буде контент статистики */}
-        </MainContent>
+				<Outlet/>
 
         <BottomNavigation>
           <NavIcon onClick={() => navigate('/expenses')}>
@@ -156,5 +148,3 @@ const StatisticsPage: React.FC = () => {
     </PageWrapper>
   );
 };
-
-export default StatisticsPage; 

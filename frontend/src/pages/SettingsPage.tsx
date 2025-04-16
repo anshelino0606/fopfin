@@ -173,7 +173,7 @@ const NavIcon = styled.button<{ active?: boolean }>`
   }
 `;
 
-const SettingsPage: React.FC = () => {
+export const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const [email] = useState('user@example.com'); 
@@ -263,5 +263,3 @@ const SettingsPage: React.FC = () => {
     </PageWrapper>
   );
 };
-
-export default SettingsPage; 
