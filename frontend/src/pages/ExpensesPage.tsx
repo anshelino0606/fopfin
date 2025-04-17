@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+
+import {Expense} from "../utils/types";
+import {expenseCategories} from "../utils/mocks";
 import { useTheme } from '../context/ThemeContext';
 
 const PageWrapper = styled.div`
@@ -244,27 +247,7 @@ const ModalBackButton = styled(BackButton)`
   margin-left: 12px;
 `;
 
-const categories = [
-  'Продукти',
-  'Пальне',
-  'Алкоголь і сигарети',
-  'Обслуговування авто',
-  'Оренда житла',
-  'Комунальні послуги',
-  'Зв\'язок',
-  'Подарунки',
-  'Заощадження',
-  'Кафе та ресторани',
-  'Здоров\'я'
-];
-
-interface Expense {
-  amount: number;
-  category: string;
-  id: number;
-}
-
-const ExpensesPage: React.FC = () => {
+export const ExpensesPage: React.FC = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [amount, setAmount] = useState('');
@@ -362,7 +345,7 @@ const ExpensesPage: React.FC = () => {
                 <CategoryOption value="" disabled>
                   Категорія
                 </CategoryOption>
-                {categories.map(category => (
+                {expenseCategories.map(category => (
                   <CategoryOption key={category} value={category}>
                     {category}
                   </CategoryOption>
@@ -379,5 +362,3 @@ const ExpensesPage: React.FC = () => {
     </PageWrapper>
   );
 };
-
-export default ExpensesPage;

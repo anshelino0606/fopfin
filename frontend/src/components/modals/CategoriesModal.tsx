@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
+import {Category} from "../../utils/types";
+import {defaultCategories} from "../../utils/mocks";
+
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -199,30 +202,6 @@ const ActionButton = styled.button`
   justify-content: center;
   cursor: pointer;
 `;
-
-interface Category {
-  name: string;
-  isIncome: boolean;
-  isExpense: boolean;
-  hasTax: boolean;
-}
-
-const defaultCategories: Category[] = [
-  { name: 'Зарплата', isIncome: true, isExpense: false, hasTax: true },
-  { name: 'Подарунки', isIncome: true, isExpense: false, hasTax: false },
-  { name: 'Підробіток', isIncome: true, isExpense: false, hasTax: true },
-  { name: 'Продукти', isIncome: false, isExpense: true, hasTax: false },
-  { name: 'Пальне', isIncome: false, isExpense: true, hasTax: false },
-  { name: 'Алкоголь і сигарети', isIncome: false, isExpense: true, hasTax: false },
-  { name: 'Обслуговування авто', isIncome: false, isExpense: true, hasTax: false },
-  { name: 'Оренда житла', isIncome: false, isExpense: true, hasTax: false },
-  { name: 'Комунальні послуги', isIncome: false, isExpense: true, hasTax: false },
-  { name: "Зв'язок", isIncome: false, isExpense: true, hasTax: false },
-  { name: 'Подарунки', isIncome: false, isExpense: true, hasTax: false },
-  { name: 'Заощадження', isIncome: false, isExpense: true, hasTax: false },
-  { name: 'Кафе та ресторани', isIncome: false, isExpense: true, hasTax: false },
-  { name: "Здоров'я", isIncome: false, isExpense: true, hasTax: false },
-];
 
 const CategoriesModal: React.FC = () => {
   const navigate = useNavigate();

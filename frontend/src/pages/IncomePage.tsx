@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+
+import {Income} from "../utils/types";
+import {incomeCategories} from "../utils/mocks";
 import { useTheme } from '../context/ThemeContext';
 
 const PageWrapper = styled.div`
@@ -244,19 +247,7 @@ const ModalBackButton = styled(BackButton)`
   margin-left: 12px;
 `;
 
-const categories = [
-  'Зарплата',
-  'Подарунки',
-  'Підробіток'
-];
-
-interface Income {
-  amount: number;
-  category: string;
-  id: number;
-}
-
-const IncomePage: React.FC = () => {
+export const IncomePage: React.FC = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [amount, setAmount] = useState('');
@@ -358,7 +349,7 @@ const IncomePage: React.FC = () => {
                 <CategoryOption value="" disabled>
                   Категорія
                 </CategoryOption>
-                {categories.map(category => (
+                {incomeCategories.map(category => (
                   <CategoryOption key={category} value={category}>
                     {category}
                   </CategoryOption>
@@ -375,5 +366,3 @@ const IncomePage: React.FC = () => {
     </PageWrapper>
   );
 };
-
-export default IncomePage;

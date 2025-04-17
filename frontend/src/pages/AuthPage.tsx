@@ -95,7 +95,7 @@ const ButtonContainer = styled.div`
   justify-content: center;
 `;
 
-const AuthPage: React.FC = () => {
+export const AuthPage: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -143,5 +143,3 @@ const AuthPage: React.FC = () => {
     </PageWrapper>
   );
 };
-
-export default AuthPage; 
