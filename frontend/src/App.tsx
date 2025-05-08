@@ -1,16 +1,24 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
 import { ThemeProvider } from './context/ThemeContext';
 import GlobalStyles from './styles/GlobalStyles';
-import AuthPage from './pages/AuthPage';
-import ExpensesPage from './pages/ExpensesPage';
-import IncomePage from './pages/IncomePage';
-import StatisticsPage from './pages/StatisticsPage';
-import SettingsPage from './pages/SettingsPage';
 import UsersModal from './components/modals/UsersModal';
 import CategoriesModal from './components/modals/CategoriesModal';
 import DeleteDataModal from './components/modals/DeleteDataModal';
 import LogoutModal from './components/modals/LogoutModal';
+import {
+  AuthPage,
+  ExpensesPage,
+  ExpensesStatisticPage,
+  IncomePage,
+  IncomeStatisticPage,
+  SettingsPage,
+  StatisticsMenuPage,
+  StatisticsPage,
+  TaxesStatisticPage,
+} from "./pages";
+
 
 const App: React.FC = () => {
   return (
@@ -21,7 +29,12 @@ const App: React.FC = () => {
           <Route path="/" element={<AuthPage />} />
           <Route path="/expenses" element={<ExpensesPage />} />
           <Route path="/income" element={<IncomePage />} />
-          <Route path="/statistics" element={<StatisticsPage />} />
+          <Route path="/statistics" element={<StatisticsPage />} >
+            <Route index element={<StatisticsMenuPage/>}/>
+            <Route path="expense-report" element={<ExpensesStatisticPage/>}/>
+            <Route path="income-report" element={<IncomeStatisticPage/>}/>
+            <Route path="tax-report" element={<TaxesStatisticPage/>}/>
+          </Route>
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/settings/users" element={<UsersModal />} />
           <Route path="/settings/categories" element={<CategoriesModal />} />
