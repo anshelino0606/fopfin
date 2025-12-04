@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using fopfin.Application.Interfaces;
+using fopfin.Application.Factories;
+using fopfin.Application.Enums;
 using System.Security.Claims;
 
 namespace fopfin.API.Controllers
@@ -11,12 +13,10 @@ namespace fopfin.API.Controllers
     public class ReportController : ControllerBase
     {
         private readonly ITaxReportService _taxReportService;
-        private readonly IPdfGeneratorService _pdfGeneratorService;
 
-        public ReportController(ITaxReportService taxReportService, IPdfGeneratorService pdfGeneratorService)
+        public ReportController(ITaxReportService taxReportService)
         {
             _taxReportService = taxReportService;
-            _pdfGeneratorService = pdfGeneratorService;
         }
 
         [HttpGet("monthly")]
@@ -33,21 +33,35 @@ namespace fopfin.API.Controllers
         }
 
 
-        [HttpGet("pdf")]
-        public async Task<IActionResult> GeneratePdfReport([FromQuery] int userId, [FromQuery] string month)
+        [HttpGet("generate")]
+        public async Task<IActionResult> GenerateReport([FromQuery] int userId, [FromQuery] string month, [FromQuery] ReportFormat format = ReportFormat.Pdf)
         {
             var report = await _taxReportService.GenerateReport(userId, month);
-            var pdfBytes = await _pdfGeneratorService.GeneratePdf(report);
-            return File(pdfBytes, "application/pdf", "tax-report.pdf");
+            var generator = ReportGeneratorFactory.Create(format);
+            var reportBytes = await generator.GenerateAsync(report);
+            
+            return format switch
+            {
+                ReportFormat.Pdf => File(reportBytes, "application/pdf", "tax-report.pdf"),
+                ReportFormat.Csv => File(reportBytes, "text/csv", "tax-report.csv"),
+                _ => BadRequest("Unsupported format")
+            };
         }
 
         [HttpGet("tax")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetTaxReport([FromQuery] int userId, [FromQuery] string period)
+        public async Task<IActionResult> GetTaxReport([FromQuery] int userId, [FromQuery] string period, [FromQuery] ReportFormat format = ReportFormat.Pdf)
         {
             var report = await _taxReportService.GenerateReport(userId, period);
-            var pdf = await _pdfGeneratorService.GeneratePdf(report);
-            return File(pdf, "application/pdf", "TaxReport.pdf");
+            var generator = ReportGeneratorFactory.Create(format);
+            var reportBytes = await generator.GenerateAsync(report);
+            
+            return format switch
+            {
+                ReportFormat.Pdf => File(reportBytes, "application/pdf", "TaxReport.pdf"),
+                ReportFormat.Csv => File(reportBytes, "text/csv", "TaxReport.csv"),
+                _ => BadRequest("Unsupported format")
+            };
         }
     }
 }

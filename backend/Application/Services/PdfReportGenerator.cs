@@ -6,9 +6,9 @@ using fopfin.API.DTOs;
 
 namespace fopfin.Application.Services
 {
-    public class PdfGeneratorService : IPdfGeneratorService
+    public class PdfReportGenerator : IReportGenerator
     {
-        public async Task<byte[]> GeneratePdf(TaxReportDto taxReport)
+        public async Task<byte[]> GenerateAsync(TaxReportDto taxReport)
         {
             return await Task.Run(() =>
             {

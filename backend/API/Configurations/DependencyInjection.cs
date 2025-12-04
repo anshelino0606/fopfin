@@ -15,7 +15,6 @@ namespace fopfin.API.Configurations
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ITaxReportService, TaxReportService>();
-            services.AddScoped<IPdfGeneratorService, PdfGeneratorService>();
 
             return services;
         }
