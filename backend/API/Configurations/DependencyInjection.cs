@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using fopfin.Application.Interfaces;
 using fopfin.Application.Services;
 using fopfin.Infrastructure.Persistence;
@@ -22,9 +23,28 @@ namespace fopfin.API.Configurations
 
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // Database Connection (PostgreSQL)
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            // --- РЕАЛІЗАЦІЯ ADR 001: DB ADAPTER ---
+
+            // 1. Реєструємо наш адаптер. 
+            // Це дозволяє легко замінити PostgreSqlConfigurer на SqlServerConfigurer у майбутньому
+            services.AddSingleton<IDbContextConfigurer, PostgreSqlConfigurer>();
+
+            // 2. Налаштовуємо DbContext, використовуючи адаптер
+            services.AddDbContext<AppDbContext>((serviceProvider, options) =>
+            {
+                // Отримуємо адаптер з контейнера
+                var configurer = serviceProvider.GetRequiredService<IDbContextConfigurer>();
+
+                // Отримуємо рядок підключення з перевіркою на null
+                // Якщо рядка немає в конфігах, програма викине зрозумілу помилку замість NullReferenceException
+                var connectionString = configuration.GetConnectionString("DefaultConnection")
+                    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found in configuration.");
+
+                // Делегуємо налаштування адаптеру
+                configurer.Configure(options, connectionString);
+            });
+
+            // ----------------------------------------
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();
