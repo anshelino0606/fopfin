@@ -1,32 +1,63 @@
-using System.Linq;
-using System.Threading.Tasks;
 using fopfin.Application.Interfaces;
+using fopfin.Application.Strategies;
 using fopfin.API.DTOs;
-using fopfin.Infrastructure.Persistence;
 using fopfin.Domain.Enums;
 
-public class TaxReportService : ITaxReportService
+namespace fopfin.Application.Services
 {
-    private readonly ITransactionRepository _transactionRepo;
-
-    public TaxReportService(ITransactionRepository transactionRepo)
+    public class TaxReportService : ITaxReportService
     {
-        _transactionRepo = transactionRepo;
-    }
+        private readonly ITransactionRepository _transactionRepo;
+        private readonly IUserRepository _userRepository;
+        private readonly ITaxStrategyFactory _taxStrategyFactory;
 
-    public async Task<TaxReportDto> GenerateReport(int userId, string period)
+        public TaxReportService(
+            ITransactionRepository transactionRepo, 
+            IUserRepository userRepository,
+            ITaxStrategyFactory taxStrategyFactory)
         {
+            _transactionRepo = transactionRepo;
+            _userRepository = userRepository;
+            _taxStrategyFactory = taxStrategyFactory;
+        }
+
+        public async Task<TaxReportDto> GenerateReport(int userId, string period)
+        {
+            // 1. Отримуємо користувача для визначення TaxGroup
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"User with ID {userId} not found.");
+            }
+
+            // 2. Отримуємо транзакції
             var transactions = await _transactionRepo.GetTransactions(userId, period);
 
-            decimal totalIncome = transactions.Where(t => t.Type == TransactionType.Income).Sum(t => t.Amount);
-            decimal totalTax = totalIncome * 0.05m; // Example: 5% tax
+            // 3. Обираємо стратегію через фабрику
+            var strategy = _taxStrategyFactory.GetStrategy(user.TaxGroup);
+
+            // 4. Розраховуємо податок
+            decimal taxAmount = strategy.CalculateTax(transactions);
+
+            // 5. Формуємо результат (DTO)
+            var totalIncome = transactions
+                .Where(t => t.Type == TransactionType.Income)
+                .Sum(t => t.Amount);
 
             return new TaxReportDto
             {
                 UserId = userId,
                 Period = period,
                 TotalIncome = totalIncome,
-                TotalTax = totalTax
+                TotalTax = taxAmount,
+                // Мапінг транзакцій в DTO (спрощено)
+                Transactions = transactions.Select(t => new TransactionDto 
+                { 
+                    Date = t.CreatedAt, 
+                    Amount = t.Amount, 
+                    Type = t.Type.ToString() 
+                }).ToList()
             };
         }
+    }
 }
