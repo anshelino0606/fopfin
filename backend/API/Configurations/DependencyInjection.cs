@@ -5,6 +5,7 @@ using fopfin.Application.Interfaces;
 using fopfin.Application.Services;
 using fopfin.Infrastructure.Persistence;
 using fopfin.Infrastructure.Auth;
+using fopfin.Application.Strategies;
 
 namespace fopfin.API.Configurations
 {
@@ -17,6 +18,18 @@ namespace fopfin.API.Configurations
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ITaxReportService, TaxReportService>();
             services.AddScoped<IPdfGeneratorService, PdfGeneratorService>();
+
+            // Реєстрація стратегій як Transient (вони stateless)
+            services.AddTransient<EntrepreneurTaxStrategy>();
+            services.AddTransient<GeneralSystemTaxStrategy>();
+            services.AddTransient<IndividualTaxStrategy>();
+
+            // Реєстрація фабрики
+            services.AddScoped<ITaxStrategyFactory, TaxStrategyFactory>();
+
+            // Реєстрація оновленого сервісу
+            services.AddScoped<ITaxReportService, TaxReportService>();
+
 
             return services;
         }

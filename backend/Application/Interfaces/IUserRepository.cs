@@ -6,6 +6,7 @@ namespace fopfin.Application.Interfaces
 {
     public interface IUserRepository
     {
+        Task<User?> GetByIdAsync(int id);
         Task<User?> FindByEmail(Email email);
         Task<User?> FindByOAuth(string provider, string oauthId);
         Task<User?> FindByRefreshToken(string refreshToken);

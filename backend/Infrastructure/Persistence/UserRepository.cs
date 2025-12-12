@@ -31,6 +31,11 @@ namespace fopfin.Infrastructure.Persistence {
                 .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
         }
 
+        public async Task<User?> GetByIdAsync(int id)
+        {
+            return await _context.Users.FindAsync(id);
+        }
+        
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
